@@ -1,8 +1,8 @@
 # Lore
 
-## Overview 
+## Overview
 
-App that facilitates the sharing of languages between two parties.
+App that facilitates the sharing of languages between two parties. 
 
 ## Getting Started
 
