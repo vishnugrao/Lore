@@ -57,8 +57,19 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+class NamedNode {
+  final int id;
+  String name;
+
+  NamedNode(this.id, this.name);
+}
+
+// Global map of node names mapping nodes to their names
+Map<Node, NamedNode> nodeMap = {};
+
 class _MyHomePageState extends State<MyHomePage> {
 
+  var nodeName = "";
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +82,8 @@ class _MyHomePageState extends State<MyHomePage> {
     graph.addEdge(node1, node2);
     graph.addEdge(node2, node1);
     graph.addEdge(node3, node1);
+
+    nodeMap.addAll({node1: NamedNode(node1.key?.value as int, "Angie"), node2: NamedNode(node2.key?.value as int, "Vish"), node3: NamedNode(node3.key?.value as int, "Yao")});
 
 
     builder
@@ -178,12 +191,25 @@ class _MyHomePageState extends State<MyHomePage> {
                           },
                         ),
                       ),
+                      Container(
+                        width: 100,
+                        child: TextFormField(
+                          initialValue: "Word",
+                          decoration: const InputDecoration(labelText: "Node Display Name"),
+                          onChanged: (text) {
+                            nodeName = text ?? "";
+                            this.setState(() {});
+                          },
+                        ),
+                      ),
                       ElevatedButton(
                         onPressed: () {
-                          final node12 = Node.Id(r.nextInt(100));
-                          var edge = graph.getNodeAtPosition(r.nextInt(graph.nodeCount()));
-                          print(edge);
-                          graph.addEdge(edge, node12);
+                          final nodeId = r.nextInt(100); // Generate a unique ID for the node
+                          final node = Node.Id(nodeId);
+                          final namedNode = NamedNode(nodeId, nodeName);
+                          nodeMap[node] = namedNode; // Store the node with its name
+                          var edge = nodeMap.keys.elementAt(r.nextInt(nodeMap.length)); // Get a random node to connect to
+                          graph.addEdge(edge, node);
                           setState(() {});
                         },
                         child: const Text("Add"),
@@ -204,9 +230,21 @@ class _MyHomePageState extends State<MyHomePage> {
                           ..strokeWidth = 1
                           ..style = PaintingStyle.stroke,
                         builder: (Node node) {
-                          // The type of widget shown can be decided to be changed here
-                          var a = node.key?.value as int;
-                          return rectangleWidget(a);
+                          // Retrieve the named node information safely
+                          final namedNode = nodeMap[node];
+                          if (namedNode != null) {
+                            return rectangleWidget(namedNode);  // Only call the widget function if namedNode is not null
+                          } else {
+                            // Handle the case where no namedNode is found, possibly by returning a default widget
+                            return Container(
+                              padding: EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.redAccent,  // Indicate an error or missing node visually
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text("Missing Node"),
+                            );
+                          }
                         },
                       ),
                     ),
@@ -222,20 +260,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Random r = Random();
 
-  Widget rectangleWidget(int a) {
+  Widget rectangleWidget(NamedNode namedNode) {
     return InkWell(
       onTap: () {
-        print("clicked");
+        print("Clicked on Node ${namedNode.id}");
       },
       child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4),
-          boxShadow: const [
-            BoxShadow(color: Colors.blue, spreadRadius: 1),
-          ],
-        ),
-        child: Text('Node $a')),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4),
+            boxShadow: const [
+              BoxShadow(color: Colors.blue, spreadRadius: 1),
+            ],
+          ),
+          child: Text("${namedNode.name}")), // Display the name and ID
     );
   }
 
