@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:graphview/GraphView.dart';
 
 void main() {
   runApp(const MyApp());
@@ -75,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: const Center(
+      body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: Column(
@@ -92,14 +95,73 @@ class _MyHomePageState extends State<MyHomePage> {
           // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
           // action in the IDE, or press "p" in the console), to see the
           // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
           children: [
-            Text(
-                "Hi"
+            Container(
+              margin: const EdgeInsets.all(10.0),
+              // padding: const EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 0.0),
+              child: const Text(
+                "Hi Vishnu,"
+              ),
+            ),
+          //   Create a container for the graph
+            Container(
+              //   This container will hold the graph and interactive viewer
+              margin: const EdgeInsets.all(10.0),
+              child: Wrap(
+                children: [
+                  Container(
+                    // Container of max width
+                    width: 100,
+                    // Create a text form to be filled
+                    child: TextFormField(
+                      initialValue: builder.siblingSeparation.toString(),
+                      decoration: const InputDecoration(labelText: "Sibling Separation"),
+                      onChanged: (text) {
+                        builder.siblingSeparation = int.tryParse(text) ?? 100;
+                        this.setState(() {});
+                      },
+                    ),
+                  ),
+                  Container(
+                    width: 100,
+                    child: TextFormField(
+                      initialValue: builder.levelSeparation.toString(),
+                      decoration: const InputDecoration(labelText: "Level Separation"),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
       ),
     );
   }
+
+  Random r = Random();
+
+  Widget rectangleWidget(int a) {
+    return InkWell(
+      onTap: () {
+        print("clicked");
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(4),
+          boxShadow: const [
+            BoxShadow(color: Colors.blue, spreadRadius: 1),
+          ],
+        ),
+        child: Text('Node $a')),
+    );
+  }
+
+  final Graph graph = Graph()..isTree = true;
+  BuchheimWalkerConfiguration builder = BuchheimWalkerConfiguration();
+
+
 }
