@@ -65,9 +65,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final node1 = Node.Id(1);
     final node2 = Node.Id(2);
+    final node3 = Node.Id(3);
 
 
     graph.addEdge(node1, node2);
+    graph.addEdge(node2, node1);
+    graph.addEdge(node3, node1);
 
 
     builder
@@ -195,7 +198,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       maxScale: 5.6,
                       child: GraphView(
                         graph: graph,
-                        algorithm: BuchheimWalkerAlgorithm(builder, TreeEdgeRenderer(builder)),
+                        algorithm: FruchtermanReingoldAlgorithm(),
                         paint: Paint()
                           ..color = Colors.green
                           ..strokeWidth = 1
